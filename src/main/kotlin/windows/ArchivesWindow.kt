@@ -5,7 +5,7 @@ import model.Archive
 import java.util.Scanner
 
 
-class ArchivesWindow() : MenuWindow() {
+class ArchivesWindow : MenuWindow() {
     private val listOfArchive = mutableListOf<Archive>()
     override val menuOptions = mutableListOf("Создать архив")
     override val scanner = Scanner(System.`in`)

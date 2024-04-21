@@ -2,7 +2,7 @@ package menu
 
 import java.util.Scanner
 
-abstract class MenuWindow() {
+abstract class MenuWindow {
     protected abstract val menuOptions: MutableList<String>
     protected abstract fun handleSelection(index: Int)
     protected open val scanner = Scanner(System.`in`)
