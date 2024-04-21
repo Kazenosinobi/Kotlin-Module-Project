@@ -1,62 +1,31 @@
 package windows
 
-import menu.MenuOfArchives
-import menu_interface.Methods
+import menu.MenuWindow
 import model.Archive
 import java.util.Scanner
 
-class ArchivesWindow : Methods {
-    private val scanner = Scanner(System.`in`)
-    private var choice = 0
-    private val menuOfArchive = MenuOfArchives
-    private val notesWindow = NotesWindow()
+
+class ArchivesWindow() : MenuWindow() {
     private val listOfArchive = mutableListOf<Archive>()
-    fun start() {
-        showWindow()
-        while (isClose()) {
-            println("Введите значение")
-            choice = scanner.nextInt()
-            scanner.nextLine()
-//            if (scanner.hasNextInt() && choice >= 0 && choice <= 2) {
-            when (choice) {
-                0 -> create()
-                1 -> open(choice)
-                2 -> close()
-            }
-//            } else {
-//                println("Введите числовое значение от 0 до 2")
-//                scanner.nextLine()
-//            }
-//            scanner.close()
+    override val menuOptions = mutableListOf("Создать архив")
+    override val scanner = Scanner(System.`in`)
+
+    override fun handleSelection(index: Int) {
+        when (index) {
+            0 -> createArchive()
+            in 1 until menuOptions.size -> NotesWindow(listOfArchive[index - 1]).start()
         }
     }
 
-    override fun create() {
-        println("Введите название архива")
-        val nameOfNote: String = scanner.nextLine()
-        listOfArchive.add(Archive(nameOfNote, notesWindow.listOfNotes))
-        menuOfArchive.menuOfArchives.add(nameOfNote)
-        for (element in menuOfArchive.menuOfArchives) {
-            if (element == "Выход") {
-                menuOfArchive.menuOfArchives.remove(element)
-            }
+    private fun createArchive() {
+        var archiveName = ""
+        while (archiveName.isBlank()) {
+            println("Введите название архива:")
+            archiveName = scanner.nextLine().trim()
         }
-        menuOfArchive.menuOfArchives.add("Выход")
-        showWindow()
-    }
+        val newArchive = Archive(archiveName)
+        listOfArchive.add(newArchive)
+        menuOptions.add(menuOptions.size, archiveName)
 
-    override fun open(number: Int) = notesWindow.start()
-
-    override fun close() {
-        return
-    }
-
-    override fun isClose() = choice == 0
-
-    override fun showWindow() {
-        println("Список архивов:")
-        for (i in menuOfArchive.menuOfArchives.indices) {
-            println("$i. ${menuOfArchive.menuOfArchives[i]}")
-        }
     }
 }

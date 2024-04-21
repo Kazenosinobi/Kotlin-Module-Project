@@ -1,4 +1,0 @@
-package windows
-
-class CreateNoteWindow {
-}

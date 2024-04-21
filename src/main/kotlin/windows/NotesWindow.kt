@@ -1,81 +1,45 @@
 package windows
 
-import menu.MenuOfNotes
-import menu_interface.Methods
+import menu.MenuWindow
+import model.Archive
 import model.Note
 import java.util.Scanner
 
-class NotesWindow : Methods {
-    private val scanner = Scanner(System.`in`)
-    var listOfNotes = mutableListOf<Note>()
-    private var choice = 0
-    private val menuOfNotes = MenuOfNotes
-    private val archivesWindow = ArchivesWindow()
-    fun start() {
-        showWindow()
-        while (isClose()) {
-            println("Введите значение")
-            choice = scanner.nextInt()
-            scanner.nextLine()
-//            if (scanner.hasNextInt() && choice >= 0 && choice <= 2) {
-            when (choice) {
-                0 -> create()
-                1 -> open(choice)
-                2 -> close()
-            }
-//            } else {
-//                println("Введите числовое значение от 0 до 2")
-            //               scanner.nextLine()
-            //           }
-//            scanner.close()
+class NotesWindow(private val archive: Archive) : MenuWindow() {
+    override val menuOptions = mutableListOf("Создать заметку")
+    override val scanner = Scanner(System.`in`)
+
+    init {
+        menuOptions.addAll(archive.notes.map { it.nameOfNote })
+    }
+
+    override fun handleSelection(index: Int) {
+        when (index) {
+            0 -> createNote()
+            in 1 until menuOptions.size -> viewNote(archive.notes[index - 1])
         }
     }
 
-    override fun create() {
-//        do {
-        println("Введите название заметки")
-        val nameOfNote: String = scanner.nextLine()
-        println("Введите текст заметки")
-        val textOfNote: String = scanner.nextLine()
-        listOfNotes.add(Note(nameOfNote, textOfNote))
-        menuOfNotes.menuOfNotes.add(nameOfNote)
-        for (element in menuOfNotes.menuOfNotes) {
-            if (element == "Выход") {
-                menuOfNotes.menuOfNotes.remove(element)
-            }
+    private fun createNote() {
+        var nameOfNote = ""
+        while (nameOfNote.isBlank()) {
+            println("Введите название заметки:")
+            nameOfNote = scanner.nextLine().trim()
         }
-        menuOfNotes.menuOfNotes.add("Выход")
-        showWindow()
-//            scanner.close()
-//        } while (nameOfNote.isEmpty() && textOfNote.isEmpty())
-    }
-
-    override fun open(choice: Int) {
-        var value = 0
-        println("Заметка:\n0 - Для просмотра заметки\n1 - Для возвращения на предыдущий экран")
-        value = scanner.nextInt()
-        scanner.nextLine()
-        if (listOfNotes.isNotEmpty()) {
-            when (value) {
-                0 -> println(listOfNotes[choice - 1].value)
-                else -> showWindow()
-            }
-
+        if (nameOfNote.isBlank()) {
+            println("Пожалуйста, введите имя заметки")
         }
-    }
-
-    override fun close() {
-        archivesWindow.showWindow()
-    }
-
-    override fun isClose() = choice == 0
-
-    override fun showWindow() {
-        println("Список заметок:")
-        for (i in menuOfNotes.menuOfNotes.indices) {
-            println("$i. ${menuOfNotes.menuOfNotes[i]}")
+        var textOfNote = ""
+        while (textOfNote.isBlank()) {
+            println("Введите текст заметки:")
+            textOfNote = scanner.nextLine().trim()
         }
+        val newNote = Note(nameOfNote, textOfNote)
+        archive.notes.add(newNote)
+        menuOptions.add(menuOptions.size, nameOfNote)
     }
 
-
+    private fun viewNote(note: Note) {
+        println("Заметка: ${note.nameOfNote}\n${note.value}")
+    }
 }
