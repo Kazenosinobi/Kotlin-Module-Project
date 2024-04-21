@@ -1,3 +1,6 @@
-fun main(args: Array<String>) {
-    println("Hello World!")
+import windows.ArchivesWindow
+
+fun main() {
+    val archivesWindow = ArchivesWindow()
+    archivesWindow.start()
 }
